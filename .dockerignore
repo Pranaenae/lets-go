@@ -1,0 +1,14 @@
+sql-data/
+bin/
+
+docker-compose.yaml
+Dockerfile
+Makefile
+
+README.md
+
+*.env
+.envrc
+
+.gitignore
+.dockerignore

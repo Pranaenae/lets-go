@@ -1,0 +1,5 @@
+sql-data/
+bin/
+
+*.env
+.envrc
