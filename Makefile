@@ -3,3 +3,6 @@ build:
 
 run: build
 	./bin/go.bin
+
+docker: 
+	docker compose up -d 
