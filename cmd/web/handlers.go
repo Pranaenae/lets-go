@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
+
+	"github.com/Pranaenae/lets-go/internal/models"
 )
 
 // w is a r is a pointer to a struct
@@ -14,21 +16,15 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.html",
-		"./ui/html/pages/home.html",
-		"./ui/html/partials/nav.html",
-	}
-	ts, err := template.ParseFiles(files...)
+	snippets, err := app.snippets.Latest()
+
 	if err != nil {
 		app.serverError(w, err)
-		return
 	}
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
+
+	app.render(w, http.StatusOK, "home.html", &templateData{
+		Snippets: snippets,
+	})
 
 }
 
@@ -38,7 +34,21 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.notFound(w)
 		return
 	}
-	fmt.Fprint(w, "Display the value of id ", id)
+
+	snippet, err := app.snippets.Get(id)
+
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	app.render(w, http.StatusOK, "view.html", &templateData{
+		Snippet: snippet,
+	})
 }
 
 func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
