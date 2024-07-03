@@ -9,16 +9,19 @@ import (
 	"os"
 
 	"github.com/Pranaenae/lets-go/internal/models"
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	errorLog      *log.Logger
-	infoLog       *log.Logger
-	snippets      *models.SnippetModel
-	templateCache map[string]*template.Template
-	formDecoder   *form.Decoder
+	errorLog       *log.Logger
+	infoLog        *log.Logger
+	snippets       *models.SnippetModel
+	templateCache  map[string]*template.Template
+	formDecoder    *form.Decoder
+	sessionManager *scs.SessionManager
 }
 
 func main() {
@@ -41,11 +44,14 @@ func main() {
 
 	templateCache, err := newTemplateCache()
 
-	formDecoder := form.NewDecoder()
-
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+
+	formDecoder := form.NewDecoder()
+
+	sessionManager := scs.New()
+	sessionManager.Store = mysqlstore.New(db)
 
 	app := &application{
 		errorLog:      errorLog,
