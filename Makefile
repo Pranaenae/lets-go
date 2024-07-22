@@ -2,7 +2,7 @@ build:
 	@go build -o bin/go.bin ./cmd/web
 
 test:
-	@go test ./cmd/web 
+	@go test -v ./cmd/web 
 
 run: test build
 	./bin/go.bin
