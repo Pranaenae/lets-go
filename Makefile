@@ -1,7 +1,10 @@
 build:
 	@go build -o bin/go.bin ./cmd/web
 
-run: build
+test:
+	@go test ./cmd/web 
+
+run: test build
 	./bin/go.bin
 
 docker: 
